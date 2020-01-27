@@ -121,29 +121,36 @@ function createDownloadLink(blob) {
     var au = document.createElement('audio');
     var li = document.createElement('li');
     var link = document.createElement('a');
+    var input = document.createElement('input');
 
     //name of .wav file to use during upload and download (without extendion)
     var filename = new Date().toISOString();
-    var transcription = document.getElementById('transcription');
-    var blobTr = new Blob([transcription], { type: "text/plain;charset=utf-8" });
+
     
     //add controls to the <audio> element
     au.controls = true;
     au.src = url;
 
-    //save to disk link
-    link.href = url;
-    link.download = filename+".wav"; //download forces the browser to donwload the file using the  filename
-    link.innerHTML = "Save to disk";
+    input.setAttribute('type', 'text');
+    input.setAttribute('placeholder', 'Write transcription here');
+    input.setAttribute('id', filename);
+    
+    // //save to disk link
+    // link.href = url;
+    // link.download = filename+".wav"; //download forces the browser to download the file using the  filename
+    // link.innerHTML = "Save to disk";
 
     //add the new audio element to li
     li.appendChild(au);
+    li.appendChild(document.createTextNode('  '));
+    li.appendChild(input);
+    li.appendChild(document.createTextNode('  '));
     
     //add the filename to the li
     li.appendChild(document.createTextNode(filename+".wav "))
-
+    
     //add the save to disk link to li
-    li.appendChild(link);
+    //li.appendChild(link);
 
     
     //upload link
@@ -151,16 +158,17 @@ function createDownloadLink(blob) {
     upload.href="#";
     upload.innerHTML = "Upload";
     upload.addEventListener("click", function(event){
-	var xhr=new XMLHttpRequest();
-	xhr.onload=function(e) {
-	    if(this.readyState === 4) {
-		console.log("Server returned: ",e.target.responseText);
-	    }
-	};
-	var fd=new FormData();
-	fd.append("audio_data", blob, transcription, filename);
-	xhr.open("POST","upload.php",true);
-	xhr.send(fd);
+	// var xhr=new XMLHttpRequest();
+	// xhr.onload=function(e) {
+	//     if(this.readyState === 4) {
+	// 	console.log("Server returned: ",e.target.responseText);
+	//     }
+	// };
+	var blobTr = new Blob([document.getElementById(filename).value], { type: "text/plain;charset=utf-8" });
+	// var fd=new FormData();
+	// fd.append("audio_data", blob, blobTr, filename);
+	// xhr.open("POST","upload.php",true);
+	// xhr.send(fd);
     })
     li.appendChild(document.createTextNode (" "))//add a space in between
     li.appendChild(upload)//add the upload link to li
