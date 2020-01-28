@@ -123,8 +123,14 @@ function createDownloadLink(blob) {
     var link = document.createElement('a');
     var input = document.createElement('input');
 
+
     //name of .wav file to use during upload and download (without extendion)
     var filename = new Date().toISOString();
+
+    var UUN = sanitizeHTML(document.getElementById("UUN").value);
+    // alert(UUN.value);
+    
+    filename = UUN + "-" + filename.replace(/:/g, '-');
 
     
     //add controls to the <audio> element
@@ -158,17 +164,18 @@ function createDownloadLink(blob) {
     upload.href="#";
     upload.innerHTML = "Upload";
     upload.addEventListener("click", function(event){
-	// var xhr=new XMLHttpRequest();
-	// xhr.onload=function(e) {
-	//     if(this.readyState === 4) {
-	// 	console.log("Server returned: ",e.target.responseText);
-	//     }
-	// };
+	var xhr=new XMLHttpRequest();
+	xhr.onload=function(e) {
+	    if(this.readyState === 4) {
+		console.log("Server returned: ",e.target.responseText);
+	    }
+	};
 	var blobTr = new Blob([document.getElementById(filename).value], { type: "text/plain;charset=utf-8" });
-	// var fd=new FormData();
-	// fd.append("audio_data", blob, blobTr, filename);
-	// xhr.open("POST","upload.php",true);
-	// xhr.send(fd);
+	var fd=new FormData();
+	fd.append("audio_data", blob, filename);
+	fd.append("text_data", blobTr, filename);
+	xhr.open("POST","upload.php",true);
+	xhr.send(fd);
     })
     li.appendChild(document.createTextNode (" "))//add a space in between
     li.appendChild(upload)//add the upload link to li
@@ -176,3 +183,9 @@ function createDownloadLink(blob) {
     //add the li element to the ol
     recordingsList.appendChild(li);
 }
+
+var sanitizeHTML = function (str) {
+    var temp = document.createElement('div');
+    temp.textContent = str;
+    return temp.innerHTML;
+};
